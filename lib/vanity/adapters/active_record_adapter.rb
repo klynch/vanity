@@ -151,6 +151,8 @@ module Vanity
                 VanityExperiment.new(:experiment_id => experiment.to_s)
         record.created_at ||= time
         record.save
+      rescue ActiveRecord::StatementInvalid => e
+        warn e
       end
 
       # Return when experiment was created.
