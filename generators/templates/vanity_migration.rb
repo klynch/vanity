@@ -10,7 +10,7 @@ class VanityMigration < ActiveRecord::Migration
       t.integer :vanity_metric_id
       t.integer :index
       t.integer :value
-      t.string :date
+      t.datetime :created_at
     end
     add_index :vanity_metric_values, [:vanity_metric_id]
 

@@ -111,7 +111,7 @@ module Vanity
         record = VanityMetric.retrieve(metric)
 
         values.each_with_index do |value, index|
-          record.vanity_metric_values.create(:date => timestamp.to_date.to_s, :index => index, :value => value)
+          record.vanity_metric_values.create(:created_at => timestamp.to_s, :index => index, :value => value)
         end
 
         record.updated_at = Time.now
@@ -119,19 +119,13 @@ module Vanity
       end
 
       def metric_values(metric, from, to)
-        connection = VanityMetric.connection
         record = VanityMetric.retrieve(metric)
-        dates = (from.to_date..to.to_date).map(&:to_s)
-        conditions = [connection.quote_column_name('date') + ' IN (?)', dates]
-        order = "#{connection.quote_column_name('date')}"
-        select = "sum(#{connection.quote_column_name('value')}) AS value, #{connection.quote_column_name('date')}"
-        group_by = "#{connection.quote_column_name('date')}"
 
         values = record.vanity_metric_values.all(
-                :select => select,
-                :conditions => conditions,
-                :order => order,
-                :group => group_by
+                :select => 'sum(value) AS value, date(created_at)',
+                :conditions => 'created_at' => (from...to),
+                :order => 'created_at',
+                :group => 'date(created_at)'
         )
 
         dates.map do |date|
