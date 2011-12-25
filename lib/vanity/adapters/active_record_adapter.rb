@@ -120,18 +120,9 @@ module Vanity
 
       def metric_values(metric, from, to)
         record = VanityMetric.retrieve(metric)
-
-        values = record.vanity_metric_values.all(
-                :select => 'sum(value) AS value, date(created_at)',
-                :conditions => 'created_at' => (from...to),
-                :order => 'created_at',
-                :group => 'date(created_at)'
-        )
-
-        dates.map do |date|
-          value = values.detect{|v| v.date == date }
-          [(value && value.value) || 0]
-        end
+        dates = (from...(to+1.day))
+        values = record.vanity_metric_values.where(:created_at => dates).group("date(created_at)").sum(:value)
+        dates.map { |date| [values[date.to_s] || 0] }
       end
 
       def destroy_metric(metric)

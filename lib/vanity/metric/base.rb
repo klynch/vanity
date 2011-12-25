@@ -86,7 +86,7 @@ module Vanity
       #   Vanity::Metric.data(my_metric, Date.today - 89, Date.today)
       def data(metric, *args)
         first = args.shift || 90
-        to = args.shift || Date.today
+        to = args.shift || Time.zone.today
         from = first.respond_to?(:to_date) ? first.to_date : to - (first - 1)
         (from..to).zip(metric.values(from, to))
       end
