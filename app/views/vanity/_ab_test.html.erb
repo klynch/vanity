@@ -5,7 +5,7 @@
   <% score.alts.each do |alt| %>
     <tr class="<%= "choice" if score.choice == alt %>">
       <td class="option"><%= alt.name.gsub(/^o/, "O") %>:</td>
-      <td class="value"><code><%=vanity_h alt.value.to_s %></code></td>
+      <td class="value"><code><%= alt.value %></code></td>
       <td class="value"><%= alt.participants %> participants</td>
       <td class="value"><%= alt.converted %> converted</td>
       <td>
@@ -18,11 +18,10 @@
             showing
           <% else %>
             <a class="button chooses" title="Show me this alternative from now on" href="#"
-              data-id="<%= experiment.id %>" data-url="<%= url_for(:action=>:chooses, :e=>experiment.id, :a=>alt.id) %>">show</a>
+              data-id="<%= experiment.id %>" data-url="<%= url_for(:action=>:chooses, :controller => "/vanity", :e=>experiment.id, :a=>alt.id) %>">show</a>
           <% end %>
         <% end %>
       </td>
     </tr>
   <% end %>
 </table>
-<%=  %>
