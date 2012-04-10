@@ -49,7 +49,9 @@ module Vanity
               cookies["vanity_id"] = { :value=>@vanity_identity, :expires=>1.month.from_now }
               @vanity_identity
             elsif response # everyday use
-              @vanity_identity = cookies["vanity_id"] || ActiveSupport::SecureRandom.hex(16)
+              #conditional for Rails2 support
+              secure_random = defined?(SecureRandom) ? SecureRandom : ActiveSupport::SecureRandom
+              @vanity_identity = cookies["vanity_id"] || secure_random.hex(16)
               cookie = { :value=>@vanity_identity, :expires=>1.month.from_now }
               # Useful if application and admin console are on separate domains.
               # This only works in Rails 3.x.
@@ -83,7 +85,8 @@ module Vanity
         else
           class << self
             define_method :vanity_identity do
-              @vanity_identity = @vanity_identity || ActiveSupport::SecureRandom.hex(16)
+              secure_random = defined?(SecureRandom) ? SecureRandom : ActiveSupport::SecureRandom
+              @vanity_identity = @vanity_identity || secure_random.hex(16)
             end
           end
         end
@@ -189,7 +192,11 @@ module Vanity
  
         if block
           content = capture(value, &block)
-          block_called_from_erb?(block) ? concat(content) : content
+          if defined?(block_called_from_erb?) && block_called_from_erb?(block)
+             concat(content)
+          else
+            content
+          end
         else
           value
         end
